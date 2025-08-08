@@ -1,0 +1,174 @@
+<!doctype html>
+
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hablemos — Apoyo contra el Bullying</title>
+  <meta name="description" content="Página sencilla para informar sobre el bullying y permitir que alguien hable contigo de forma segura." />
+  <style>
+    :root{--bg:#f7f9fc;--card:#ffffff;--accent:#0b84ff;--muted:#6b7280}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:#111}
+    .wrap{max-width:900px;margin:12px auto;padding:12px}
+    header{display:flex;gap:12px;align-items:center}
+    .logo{height:54px;width:54px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#6bd4ff);display:flex;align-items:center;justify-content:center;color:white;font-weight:700}
+    h1{font-size:1.25rem;margin:0}
+    p.lead{margin:6px 0 14px;color:var(--muted)}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}
+    .card{background:var(--card);border-radius:14px;padding:12px;box-shadow:0 6px 18px rgba(10,20,40,0.06)}
+    .resources ul{padding-left:18px;margin:8px 0}/* Chat UI */
+.chat{display:flex;flex-direction:column;height:60vh;min-height:380px}
+.messages{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:78%;padding:10px;border-radius:10px}
+.me{align-self:flex-end;background:#e6f0ff}
+.you{align-self:flex-start;background:#f0f0f0}
+form.controls{display:flex;gap:8px;padding:8px;border-top:1px solid #eee}
+input[type=text],textarea{flex:1;padding:10px;border-radius:8px;border:1px solid #e6e9ef;font-size:0.95rem}
+button{background:var(--accent);color:white;padding:10px 12px;border:none;border-radius:8px;font-weight:600}
+small{color:var(--muted)}
+
+/* Responsive tweaks */
+@media(min-width:720px){.grid{grid-template-columns:2fr 1fr}.chat{height:420px}}
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">HB</div>
+      <div>
+        <h1>Hablemos — Contra el Bullying</h1>
+        <p class="lead">Un espacio seguro para hablar. Si estás en peligro inminente, llama a los servicios de emergencia.</p>
+      </div>
+    </header><div class="grid">
+  <section class="card">
+    <h2>¿Qué es el bullying?</h2>
+    <p>El bullying (acoso) es cualquier comportamiento repetido que intenta dañar física o emocionalmente a alguien. Aquí encontrarás recursos, consejos y la opción de hablar conmigo directamente desde esta web.</p>
+
+    <div class="resources">
+      <h3>Recursos rápidos</h3>
+      <ul>
+        <li>Habla con un adulto de confianza.</li>
+        <li>Documenta lo ocurrido (capturas, fechas).</li>
+        <li>Si es escuela, informa a la institución.</li>
+        <li>Si hay riesgo físico, contacta a emergencias.</li>
+      </ul>
+      <p><small>Si querés ayuda profesional: consulta líneas de ayuda locales o un profesional de la salud mental.</small></p>
+    </div>
+
+    <hr />
+    <p><strong>Privacidad:</strong> Los mensajes se enviarán al administrador del sitio. No publiques datos sensibles (números de documento, contraseñas). Si querés anonimato, usa un apodo.</p>
+  </section>
+
+  <aside class="card">
+    <h3>Contacta ahora — Chat</h3>
+    <div class="chat" id="chat">
+      <div class="messages" id="messages" aria-live="polite"></div>
+
+      <!-- Form: by default uses FORM_ENDPOINT variable in script. -->
+      <form id="contactForm" class="controls" autocomplete="off">
+        <input type="text" id="name" placeholder="Tu nombre (o apodo)" required />
+        <button type="submit">Enviar</button>
+      </form>
+
+      <form id="messageForm" class="controls" style="margin-top:6px;">
+        <textarea id="message" rows="2" placeholder="Escribe tu mensaje aquí..." required></textarea>
+        <button type="submit">Mandar</button>
+      </form>
+      <div style="padding:8px"><small>Si no llega la notificación, revisá tu conexión o prueba la opción alternativa más abajo.</small></div>
+    </div>
+
+    <hr />
+    <div>
+      <h4>Alternativa</h4>
+      <p>Si no querés usar el chat, podés enviar un correo: <a id="mailtoLink" href="#">Enviar por email</a></p>
+    </div>
+  </aside>
+</div>
+
+<div style="margin-top:12px;text-align:center;color:var(--muted);font-size:0.9rem">
+  <small>Hecho desde el teléfono • Fácil de publicar en GitHub Pages o Netlify</small>
+</div>
+
+  </div>  <script>
+    /*
+      
+      - FORM_ENDPOINT: Si quieres que los mensajes lleguen por POST a un servicio como Formspree o un webhook de Zapier,
+     https://formspree.io/f/yourformid
+    
+    
+  
+    const adminEmail = 'estechelucas603@gmail.com'; // reemplaza con tu email para el mailto alternativo
+
+    const messagesEl = document.getElementById('messages');
+    const contactForm = document.getElementById('contactForm');
+    const messageForm = document.getElementById('messageForm');
+    const mailtoLink = document.getElementById('mailtoLink');
+
+    function addMessage(text, from='you'){
+      const d = document.createElement('div');
+      d.className = 'msg ' + (from==='me'? 'me':'you');
+      d.textContent = text;
+      messagesEl.appendChild(d);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    // init
+    addMessage('Hola — si querés hablar, escribí tu nombre y un mensaje. Respondo lo antes posible.', 'me');
+
+    contactForm.addEventListener('submit', (e)=>{
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      if(!name) return;
+      addMessage('Nombre guardado: ' + name, 'me');
+      contactForm.querySelector('input').blur();
+    });
+
+    messageForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim() || 'Anon';
+      const message = document.getElementById('message').value.trim();
+      if(!message) return;
+
+      addMessage(message, 'you');
+
+      // Prepare payload
+      const payload = {name, message, ts: new Date().toISOString(), page: location.href};
+
+      if(FORM_ENDPOINT){
+        try{
+          const res = await fetch(FORM_ENDPOINT,{
+            method:'POST',headers:{'Content-Type':'application/json'},body: JSON.stringify(payload)
+          });
+          if(res.ok){
+            addMessage('Mensaje enviado — gracias. Te responderé pronto.', 'me');
+            messageForm.reset();
+          } else {
+            addMessage('Error al enviar: el servidor respondió con estado ' + res.status + '.', 'me');
+          }
+        }catch(err){
+          addMessage('No se pudo conectar al servidor. Revisa tu endpoint.', 'me');
+          console.error(err);
+        }
+      } else {
+        // Fallback: open mail client with prefilled body
+        const subject = encodeURIComponent('Mensaje desde Hablemos — ' + name);
+        const body = encodeURIComponent('Nombre: ' + name + '\n\nMensaje:\n' + message + '\n\nEnviado desde: ' + location.href);
+        const mailto = 'mailto:' + encodeURIComponent(adminEmail) + '?subject=' + subject + '&body=' + body;
+        mailtoLink.setAttribute('href', mailto);
+        // open mail client in a new tab (mobile will ask to open app)
+        window.location.href = mailto;
+        addMessage('Se abrió tu app de correo para enviar el mensaje. Si no lo ves, revisa la configuración de tu teléfono.', 'me');
+      }
+    });
+
+    // Accessibility: allow Enter to submit message if focused inside textarea with Ctrl+Enter barrier
+    document.getElementById('message').addEventListener('keydown',(e)=>{
+      if(e.key === 'Enter' && !e.shiftKey){
+        e.preventDefault();
+        messageForm.requestSubmit();
+      }
+    });
+
+   
+    
